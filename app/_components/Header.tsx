@@ -28,7 +28,7 @@ const Header = () => {
          {/* menu options */}       
       <div className='flex items-center gap-8'>
         {menuOptions.map((menu,index)=>(
-            <Link href={menu.path}>
+            <Link href={menu.path} key={index}>
                 <h2 className='text-lg hover:scale-105 transition-all hover:text-primary'>{menu.name}</h2>
             </Link>
         ))}
