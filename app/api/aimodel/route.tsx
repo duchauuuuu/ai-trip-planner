@@ -33,7 +33,7 @@ export async function POST(req:NextRequest) {
     const {messages} = await req.json();
     try{
     const completion = await openai.chat.completions.create({
-    model: 'google/gemini-2.0-flash-exp:free',
+    model: 'deepseek/deepseek-r1:free',
     response_format:{type:'json_object'},
     messages: [
         {
