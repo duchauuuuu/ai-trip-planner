@@ -6,7 +6,6 @@ import { useUser } from "@clerk/nextjs";
 import { ArrowDown, Globe2, Landmark, Plane, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import { title } from "process";
 import React from "react";
 
 const suggestions = [
@@ -36,7 +35,8 @@ const Hero = () => {
       router.push('/sign-in');
       return;
     } 
-
+    // navigate to create new trip page
+    router.push('/create-new-trip');
   }
   return (
     <div className="mt-24 w-full flex justify-center">
