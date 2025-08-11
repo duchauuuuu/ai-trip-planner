@@ -9,21 +9,75 @@ import GroupSizeUi from "./GroupSizeUi";
 import BudgetUi from "./BudgetUi";
 import SelectDaysUi from "./SelectDaysUi";
 import FinalUi from "./FinalUi";
-
+import { useMutation } from "convex/react";
+import { api } from "@/convex/_generated/api";
+import { useTripDetail, useUserDetail } from "@/app/Provider";
+import { v4 as uuidv4 } from 'uuid';
 type Message = {
-  role: string;
-  content: string;
+  role: string,
+  content: string,
   ui?: string
 };
-type TripInfo ={
-  
+export type  TripInfo ={
+    budget: string,
+    destination: string,
+    duration: string,
+    group_size: string,
+    origin: string,
+    hotels: Hotel[],
+    itinerary:Itinerary,
 }
+export type Hotel = {
+       hotel_name: string,
+
+        hotel_address: string,
+
+        price_per_night: string,
+
+        hotel_image_url: string,
+
+        geo_coordinates: {
+
+          latitude: number,
+
+          longitude: number
+
+        },
+
+        rating: number,
+
+        description: string
+
+}
+export type Activity = {
+  place_name: string,
+  place_details: string,
+  place_image_url: string,
+  geo_coordinates: {
+    latitude: number,
+    longitude: number
+  },
+  place_address: string,
+  ticket_pricing: string,
+  time_travel_each_location: string,
+  best_time_to_visit: string
+}
+export type Itinerary = {
+  day: number,
+  day_plan: string,
+  best_time_to_visit_day: string,
+  activities: Activity[];
+};
 const ChatBox = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [userInput, setUserInput] = useState<string>();
   const [loading, setLoading] = useState<boolean>(false);
   const [isFinal,setIsFinal] = useState<boolean>(false);
-  const [tripDetail,setTripDetail] = useState();
+  const [tripDetail,setTripDetail] = useState<TripInfo>();
+  const {userDetail,setUserDetail} = useUserDetail();
+  //@ts-ignore
+  const {tripDetailInfo,setTripDetailInfo} = useTripDetail();
+  const SaveTripDetail = useMutation(api.tripDetail.CreateTripDetail);
   const onSend = async () => {
     if (!userInput?.trim()) return;
     setLoading(true);
@@ -49,6 +103,14 @@ const ChatBox = () => {
     }]);
     if(isFinal){
       setTripDetail(result?.data?.trip_plan);
+      setTripDetailInfo(result?.data?.trip_plan);
+      const tripId = uuidv4();
+       await SaveTripDetail({
+        tripDetail: result?.data?.trip_plan,
+        tripId: tripId,
+        uid: userDetail?._id,
+        
+      })
     }
     
     setLoading(false);
@@ -84,7 +146,7 @@ return <BudgetUi onSelectedOption={(v:string)=>{setUserInput(v);onSend()}}/>
      }
   },[isFinal])
   return (
-    <div className="h-[85vh] flex flex-col ">
+    <div className="h-[85vh] flex flex-col border shadow rounded-2xl p-5">
       {messages?.length === 0 && <EmptyBoxState onSelectOption={(v:string)=>{setUserInput(v); onSend()}}/>}
       {/* display message */}
       <section className="flex-1 overflow-y-auto p-4">
