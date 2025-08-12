@@ -21,7 +21,7 @@ const PlaceCardItem = ({ activity }: Props) => {
   const GetPlaceImage = async () => {
     setImageLoading(true);
     try {
-      const result = await axios.post('api/google-place-detail', {
+      const result = await axios.post('/api/google-place-detail', {
         placeName: activity?.place_name,
         type: "place"
       });

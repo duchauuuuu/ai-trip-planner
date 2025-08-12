@@ -19,7 +19,7 @@ const HotelCardItem = ({hotel}:Props) => {
   const GetGooglePlaceDetail = async () =>{
     setImageLoading(true);
     try {
-      const result = await axios.post('api/google-place-detail',{
+      const result = await axios.post('/api/google-place-detail',{
         placeName: hotel?.hotel_name,
         type: "hotel"
       });

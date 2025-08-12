@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
   
     console.log('Searching worldwide for:', searchQuery);
     const unsplashResponse = await axios.get(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchQuery)}&per_page=3&orientation=landscape&client_id=bXbCG7CxFRedpNuwRA8AUc0njnJoyCk1DtA34fmEDDM`
+      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(searchQuery)}&per_page=3&orientation=landscape&client_id=${process.env.UNSPLASH_ACCESS_KEY}`
     );
 
        const fallbackImage = `https://picsum.photos/400/300?random=${Math.floor(Math.random() * 1000)}`;
