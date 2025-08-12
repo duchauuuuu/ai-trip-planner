@@ -155,8 +155,8 @@ const Itinerary = () => {
     <div className="relative">
       <h2 className="flex gap-2 text-3xl text-white items-center absolute left-5 bottom-8"><ArrowLeft/> Getting to know you to build perfect trip here...</h2>
 
-      <Image src={'/travel.png'} alt="travel" width={800} height={800}
-    className="w-full h-full object-cover rounded-3xl"></Image>
+      <Image src={'/travel.png'} alt="travel" width={800} height={600}
+    className="w-full h-[83vh] object-cover rounded-3xl"></Image>
       </div>
     }
     </div>
