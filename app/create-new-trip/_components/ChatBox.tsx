@@ -25,7 +25,7 @@ export type  TripInfo ={
     group_size: string,
     origin: string,
     hotels: Hotel[],
-    itinerary:Itinerary,
+    itinerary:Itinerary[],
 }
 export type Hotel = {
        hotel_name: string,

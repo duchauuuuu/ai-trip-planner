@@ -54,7 +54,7 @@ const GlobalMap = () => {
       <div
         ref={mapContainerRef}
         style={{
-          widows: "95%",
+          width: "95%",
           height: "85vh",
           borderRadius: 20,
         }}
