@@ -135,7 +135,7 @@ export async function POST(req:NextRequest) {
     const {has} = await auth();
     const hasPremiumAccess = has({ plan: 'monthly' })
     console.log("has", hasPremiumAccess)
-    const decision = await aj.protect(req, {userId:user?.primaryEmailAddress?.emailAddress ?? '' ,requested: isFinal ? 5 : 0}); // Deduct 5 tokens from the bucket
+    const decision = await aj.protect(req, {requested: isFinal ? 5 : 0}); // Deduct 5 tokens from the bucket
 
     if(decision?.reason?.remaining ===0 && !hasPremiumAccess){
       return NextResponse.json({
