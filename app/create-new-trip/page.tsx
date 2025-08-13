@@ -12,10 +12,12 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip"
 const CreateNewTrip = () => {
-    const {tripDetailInfo,setTripDetailInfo} = useTripDetail();
+    const tripContext = useTripDetail();
+    const tripDetailInfo = tripContext?.tripDetailInfo;
+    const setTripDetailInfo = tripContext?.setTripDetailInfo;
     const[activeIndex,setActiveIndex] = useState(0);
     useEffect(()=>{
-      setTripDetailInfo(null);
+      setTripDetailInfo?.(null);
     },[])
   return (
     <div className='grid grid-cols-1 md:grid-cols-5 gap-5 p-10 '>
