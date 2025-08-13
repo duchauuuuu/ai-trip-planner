@@ -4,7 +4,8 @@ import mapboxgl from "mapbox-gl";
 import { useTripDetail } from "@/app/Provider";
 import { Activity, Itinerary } from "./ChatBox";
 const GlobalMap = () => {
-  const { tripDetailInfo } = useTripDetail();
+  const tripContext = useTripDetail();
+  const tripDetailInfo = tripContext?.tripDetailInfo;
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   
