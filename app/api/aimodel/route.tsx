@@ -137,7 +137,7 @@ export async function POST(req:NextRequest) {
     console.log("has", hasPremiumAccess)
     const decision = await aj.protect(req, {requested: isFinal ? 5 : 0}); // Deduct 5 tokens from the bucket
 
-    if(decision?.reason?.remaining ===0 && !hasPremiumAccess){
+    if(decision.isDenied() && decision.reason.isRateLimit() && !hasPremiumAccess){
       return NextResponse.json({
         resp:'No free credit Remaining',
         ui:'limit'
