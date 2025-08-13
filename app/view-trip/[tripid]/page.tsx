@@ -13,7 +13,9 @@ const ViewTrip = () => {
     const {userDetail, setUserDetail} = useUserDetail();
     const convex = useConvex();
     const [tripData, setTripData] = useState<Trip>();
-     const {tripDetailInfo,setTripDetailInfo} = useTripDetail();
+    const tripContext = useTripDetail();
+    const tripDetailInfo = tripContext?.tripDetailInfo;
+    const setTripDetailInfo = tripContext?.setTripDetailInfo;
     
     useEffect(()=>{
         userDetail && GetTrip();
@@ -24,7 +26,7 @@ const ViewTrip = () => {
             tripid: tripid+''
         });
         setTripData(result);
-        setTripDetailInfo(result?.tripDetail);
+        setTripDetailInfo?.(result?.tripDetail);
     } 
   return (
     <div className='grid grid-cols-5'>
