@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import ChatBox from './_components/ChatBox'
 import Itinerary from './_components/Itinerary'
 import { useTripDetail } from '../Provider';
@@ -21,7 +21,13 @@ const CreateNewTrip = () => {
     },[])
   return (
     <div className='grid grid-cols-1 md:grid-cols-5 gap-5 p-10 '>
-        <div className='col-span-2'><ChatBox></ChatBox></div>
+        <div className='col-span-2'>
+          <Suspense fallback={<div className="flex items-center justify-center h-64">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>}>
+            <ChatBox></ChatBox>
+          </Suspense>
+        </div>
         <div className='col-span-3 relative'>
          {activeIndex === 0 ? <Itinerary></Itinerary> : <GlobalMap></GlobalMap> }
         <Tooltip>
