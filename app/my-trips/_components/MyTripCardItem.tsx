@@ -53,7 +53,7 @@ const MyTripCardItem = ({ trip }: Props) => {
         )}
       </div>
       <h2 className="flex gap-2 font-semibold text-xl mt-2">
-        {trip?.tripDetail?.} <ArrowBigRightIcon />{" "}
+        {trip?.tripDetail?.origin} <ArrowBigRightIcon />{" "}
         {trip?.tripDetail?.destination}
       </h2>
       <h2 className="mt-2 text-gray-500">
