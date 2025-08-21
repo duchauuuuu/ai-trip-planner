@@ -6,7 +6,7 @@ import { useUser } from "@clerk/nextjs";
 import { ArrowDown, Globe2, Landmark, Plane, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-import React from "react";
+import React, { useState } from "react";
 
 export const suggestions = [
   {
@@ -27,16 +27,29 @@ export const suggestions = [
   },
 ];
 const Hero = () => {
-  
+  const [userInput, setUserInput] = useState<string>('');
   const {user} = useUser();
   const router = useRouter();
+  
   const onSend = () => {
     if(!user){
       router.push('/sign-in');
       return;
     } 
-    // navigate to create new trip page
-    router.push('/create-new-trip');
+    // navigate to create new trip page with user input
+    const encodedInput = encodeURIComponent(userInput.trim());
+    if(encodedInput) {
+      router.push(`/create-new-trip?input=${encodedInput}`);
+    } else {
+      router.push('/create-new-trip');
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onSend();
+    }
   }
   return (
     <div className="mt-24 w-full flex justify-center">
@@ -55,9 +68,12 @@ const Hero = () => {
         <div className="relative">
           <div className=" border rounded-2xl p-4">
             <Textarea
-              placeholder="Create a trip for Parise from New york"
+              placeholder="Create a trip for Paris from New York"
               className="w-full h-28 bg-transparent border-none focus-visible:ring-0
                 shadow-none resize-none"
+              value={userInput}
+              onChange={(e) => setUserInput(e.target.value)}
+              onKeyDown={handleKeyPress}
             ></Textarea>
             <Button size={"icon"} className="absolute bottom-6 right-6"
             onClick={()=>onSend()}>

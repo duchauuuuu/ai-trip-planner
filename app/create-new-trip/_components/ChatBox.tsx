@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import axios from "axios";
 import { Loader, Send } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import EmptyBoxState from "./EmptyBoxState";
 import GroupSizeUi from "./GroupSizeUi";
 import BudgetUi from "./BudgetUi";
@@ -13,6 +13,7 @@ import { useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api";
 import { useTripDetail, useUserDetail } from "@/app/Provider";
 import { v4 as uuidv4 } from 'uuid';
+import { useSearchParams } from "next/navigation";
 type Message = {
   role: string,
   content: string,
@@ -74,20 +75,87 @@ const ChatBox = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [isFinal,setIsFinal] = useState<boolean>(false);
   const [tripDetail,setTripDetail] = useState<TripInfo>();
+  const hasInitializedRef = useRef<boolean>(false);
   const {userDetail,setUserDetail} = useUserDetail();
   //@ts-ignore
   const {tripDetailInfo,setTripDetailInfo} = useTripDetail();
   const SaveTripDetail = useMutation(api.tripDetail.CreateTripDetail);
-  const onSend = async () => {
-    if (!userInput?.trim()) return;
+  const searchParams = useSearchParams();
+
+ 
+  useEffect(() => {
+    const inputFromHero = searchParams.get('input');
+    if (inputFromHero && !hasInitializedRef.current) {
+      const decodedInput = decodeURIComponent(inputFromHero);
+      hasInitializedRef.current = true;
+      console.log('Sending from Hero:', decodedInput);
+      
+      // Auto-send the message from Hero
+      setTimeout(() => {
+        sendMessageDirectly(decodedInput);
+      }, 500);
+    }
+  }, [searchParams]);
+
+  const sendMessageDirectly = async (inputText: string) => {
+    if (!inputText?.trim() || loading) return;
+    console.log('sendMessageDirectly called with:', inputText);
     setLoading(true);
-    
     
     const newMsg: Message = {
       role: "user",
-      content: userInput ?? '',
+      content: inputText,
     };
-    setUserInput("");
+    
+    setMessages((prev: Message[]) => {
+      console.log('Adding message from Hero:', newMsg.content);
+      console.log('Previous messages count:', prev.length);
+      return [...prev, newMsg];
+    });
+
+    try {
+      const result = await axios.post("/api/aimodel", {
+        messages: [...messages, newMsg],
+        isFinal: isFinal,
+      });
+      console.log("trip", result.data);
+      
+      !isFinal && setMessages((prev:Message[])=>[...prev,{
+        role: "assistant",
+        content: result?.data?.resp,
+        ui:result?.data?.ui
+      }]);
+      
+      if(isFinal){
+        setTripDetail(result?.data?.trip_plan);
+        setTripDetailInfo(result?.data?.trip_plan);
+        const tripId = uuidv4();
+         await SaveTripDetail({
+          tripDetail: result?.data?.trip_plan,
+          tripId: tripId,
+          uid: userDetail?._id,
+        })
+      }
+    } catch (error) {
+      console.error('Error sending message:', error);
+    }
+    
+    setLoading(false);
+  };
+
+  const onSendWithInput = async (inputText: string, clearInput: boolean = true) => {
+    if (!inputText?.trim()) return;
+    setLoading(true);
+    
+    const newMsg: Message = {
+      role: "user",
+      content: inputText,
+    };
+    
+    if (clearInput) {
+      setUserInput("");
+    }
+    
     setMessages((prev: Message[]) => [...prev, newMsg]);
 
     const result = await axios.post("/api/aimodel", {
@@ -114,6 +182,18 @@ const ChatBox = () => {
     }
     
     setLoading(false);
+  };
+
+  const onSend = async () => {
+    if (!userInput?.trim() || loading) return;
+    await onSendWithInput(userInput, true);
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onSend();
+    }
   };
   const RenderGenerativeUi = (ui: string) =>{
     if(ui==='budget'){
@@ -180,6 +260,7 @@ return <BudgetUi onSelectedOption={(v:string)=>{setUserInput(v);onSend()}}/>
                 shadow-none resize-none"
             onChange={(event) => setUserInput(event.target.value)}
             value={userInput}
+            onKeyDown={handleKeyPress}
           ></Textarea>
           <Button
             size={"icon"}
